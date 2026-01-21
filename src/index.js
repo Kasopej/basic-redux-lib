@@ -1,4 +1,3 @@
-// import 'babel-polyfill';
 import React from "react";
 // @ts-ignore
 import { render } from "react-dom";
@@ -11,21 +10,25 @@ import { browserHistory } from "react-router";
 import { applyMiddlewares } from "./store/utils.js";
 
 /**
- * @type {import("./store/utils.js").Middleware<ReturnType<typeof todoApp>>}
+ * @typedef {import("./store/utils.js").Action} Action
+ * @typedef {import("./store/utils.js").Middleware<ReturnType<typeof todoApp>>} Middleware
+ */
+
+/**
+ * @type {Middleware}
  */
 const loggerMiddleware = (store) => (next) => {
   return (action) => {
-    console.log("before action", action, store.getState());
-    const state = next(
-      /** @type {import("./store/utils.js").Action} */ (action),
-    );
-    console.log("after action", action, store.getState());
+    const actionObject = /** @type {Action} */ (action);
+    console.log("before action", actionObject.type, store.getState());
+    const state = next(/** @type {Action} */ (actionObject));
+    console.log("after action", actionObject.type, store.getState());
     return state;
   };
 };
 
 /**
- * @type {import("./store/utils.js").Middleware<ReturnType<typeof todoApp>>}
+ * @type {Middleware}
  */
 const resolveMiddleware = (store) => (next) => {
   return (action) => {
@@ -37,10 +40,8 @@ const resolveMiddleware = (store) => (next) => {
 };
 
 /**
- * Tries to parse the given data string into a JSON object.
- * If there is a parsing error, it returns null.
- * @param {string} dataString - The string to parse into a JSON object
- * @returns {ReturnType<typeof todoApp>} - The parsed JSON object, or null if there was an error
+ * @param {string} dataString
+ * @returns {ReturnType<typeof todoApp>}
  */
 function getInitialState(dataString) {
   let output = undefined;
@@ -49,10 +50,13 @@ function getInitialState(dataString) {
   } catch (error) {}
   return output;
 }
-const initialStoreState = getInitialState(localStorage.getItem("state") || "");
-const store = createStore(todoApp, initialStoreState);
 const middlewares = [resolveMiddleware, loggerMiddleware];
-applyMiddlewares(store, middlewares);
+const initialStoreState = getInitialState(localStorage.getItem("state") || "");
+const store = createStore(
+  todoApp,
+  initialStoreState,
+  applyMiddlewares(middlewares),
+);
 
 const fakeAsyncAction = () =>
   new Promise((resolve) => {
