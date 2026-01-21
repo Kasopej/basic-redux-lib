@@ -1,27 +1,23 @@
 import React, { PropTypes } from 'react';
+import { Link as RouterLink } from "react-router";
 
-const Link = ({ active, children, onClick }) => {
-  if (active) {
-    return <span>{children}</span>;
-  }
-
+const Link = ({ children, filter }) => {
   return (
-    <a
-      href="#"
-      onClick={e => {
-        e.preventDefault();
-        onClick();
+    <RouterLink
+      to={filter}
+      activeStyle={{
+        textDecoration: "none",
+        color: "brown",
       }}
     >
       {children}
-    </a>
+    </RouterLink>
   );
 };
 
 Link.propTypes = {
-  active: PropTypes.bool.isRequired,
   children: PropTypes.node.isRequired,
-  onClick: PropTypes.func.isRequired,
+  filter: PropTypes.string.isRequired,
 };
 
 export default Link;

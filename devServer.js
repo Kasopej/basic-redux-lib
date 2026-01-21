@@ -1,20 +1,25 @@
 import path from 'path';
 import webpack from 'webpack';
 import webpackDevMiddleware from 'webpack-dev-middleware';
-import config from './webpack.config.babel';
-import Express from 'express';
+import config from "./webpack.config.babel.js";
+import Express from "express";
+import { fileURLToPath } from "url";
 
-const app = new Express();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const app = Express();
 const port = 3000;
 
 const compiler = webpack(config);
-app.use(webpackDevMiddleware(compiler, {
-  noInfo: true,
-  publicPath: config.output.publicPath,
-}));
+app.use(
+  webpackDevMiddleware(compiler, {
+    publicPath: config.output?.publicPath,
+  })
+);
 
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
+app.get("/*", (req, res) => {
+  res.sendFile(path.join(__dirname, "index.html"));
 });
 
 app.listen(port, error => {

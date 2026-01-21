@@ -1,0 +1,8 @@
+{
+    "codeium.enableConfig": {
+        "*": false
+    },
+    "github.copilot.enable": {
+        "*": false,
+    }
+}
